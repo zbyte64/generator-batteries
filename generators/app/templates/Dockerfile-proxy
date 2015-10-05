@@ -1,0 +1,12 @@
+FROM node:latest
+
+RUN npm install -g gulp
+RUN mkdir /opt/app
+WORKDIR /opt/app
+ADD proxy /opt/app
+ADD public /opt/public
+ADD common /opt/common
+RUN npm install
+
+EXPOSE "80"
+CMD ["npm", "start"]

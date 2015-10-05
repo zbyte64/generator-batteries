@@ -1,0 +1,31 @@
+{
+  "name": "generator-batteries",
+  "version": "0.0.0",
+  "description": "Batteries included microservices.",
+  "license": "MIT",
+  "main": "app/index.js",
+  "repository": "zbyte64/generator-batteries",
+  "author": {
+    "name": "Jason Kraus",
+    "email": "zbyte64@gmail.com",
+    "url": "https://github.com/zbyte64"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "files": [
+    "generators"
+  ],
+  "keywords": [
+    "yeoman-generator"
+  ],
+  "dependencies": {
+    "chalk": "^1.0.0",
+    "randomstring": "^1.1.0",
+    "yeoman-generator": "^0.19.0",
+    "yosay": "^1.0.2"
+  },
+  "devDependencies": {
+    "mocha": "*"
+  }
+}

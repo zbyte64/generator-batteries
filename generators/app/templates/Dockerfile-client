@@ -1,0 +1,12 @@
+FROM node:latest
+
+RUN npm install -g gulp jspm
+RUN mkdir /opt/app
+WORKDIR /opt/app
+ADD client /opt/app
+ADD common /opt/common
+RUN npm install
+RUN jspm install
+
+EXPOSE "8080"
+CMD ["gulp"]

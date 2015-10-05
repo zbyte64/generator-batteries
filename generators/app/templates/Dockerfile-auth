@@ -1,0 +1,11 @@
+FROM node:latest
+
+RUN npm install -g gulp
+RUN mkdir /opt/app
+WORKDIR /opt/app
+ADD auth /opt/app
+ADD common /opt/common
+RUN npm install
+
+EXPOSE "8080"
+CMD ["gulp"]

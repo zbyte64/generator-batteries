@@ -1,0 +1,54 @@
+api:
+  dockerfile: Dockerfile-api
+  build: ./
+  ports:
+    - "8000"
+  links:
+    - db
+  environment:
+    PORT: "8000"
+    SECRET: "<%= secret %>"
+    DATABASE_URL: "postgres://db?PASSWORD=<%= db_password %>"
+  volumes:
+    - ./api:/opt/app
+    - ./common:/opt/common
+auth:
+  dockerfile: Dockerfile-auth
+  build: ./
+  ports:
+    - "8000"
+  links:
+    - db
+  environment:
+    PORT: "8000"
+    SECRET: "<%= secret %>"
+  volumes:
+    - ./auth:/opt/app
+    - ./common:/opt/common
+client:
+  dockerfile: Dockerfile-client
+  build: ./
+  ports:
+    - "8080"
+  environment:
+    PORT: "8080"
+  volumes:
+    - ./client:/opt/app
+    - ./common:/opt/common
+proxy:
+  dockerfile: Dockerfile-proxy
+  build: ./
+  links:
+    - api
+    - auth
+    - client
+  ports:
+    - "80:80"
+  volumes:
+    - ./proxy:/opt/app
+    - ./common:/opt/common
+    - ./public:/opt/public
+db:
+  image: postgres
+  environment:
+    POSTGRES_PASSWORD: "<%= db_password %>"

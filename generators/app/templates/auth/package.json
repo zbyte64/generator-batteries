@@ -1,0 +1,22 @@
+{
+  "name": "auth",
+  "version": "0.0.0",
+  "dependencies": {
+    "babel": "^5.8.23",
+    "body-parser": "^1.14.1",
+    "express": "^4.13.3",
+    "express-jwt": "^3.1.0",
+    "flash": "^1.1.0",
+    "lodash": "^3.10.1",
+    "passport": "^0.3.0",
+    "swig": "^1.4.2"
+  },
+  "devDependencies": {
+    "gulp": "^3.8.11"
+  },
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "$(npm bin)/babel-node index.js"
+  }
+}
