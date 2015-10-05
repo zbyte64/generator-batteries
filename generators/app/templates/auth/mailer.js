@@ -19,15 +19,24 @@ export var COMMON_CONTEXT = {
 }
 
 export function sendMail(viewName, context) {
-  context = _.merge({}, context, COMMON_CONTEXT);
-  var emailView = new EmailTemplate(path.join(viewsDir, viewName));
-  emailView.render(context, function(err, results) {
-    transporter.sendMail({
-        from: process.env.EMAIL_ADDRESS || 'sender@address',
-        to: context.email,
-        subject: context.subject || 'hello',
-        text: results.text,
-        html: results.html,
+  return new Promise(function(resolve, reject) {
+    context = _.merge({}, context, COMMON_CONTEXT);
+    var emailView = new EmailTemplate(path.join(viewsDir, viewName));
+    emailView.render(context, function(err, results) {
+      if(err) return reject(err);
+      transporter.sendMail({
+          from: process.env.EMAIL_ADDRESS || 'sender@address',
+          to: context.email,
+          subject: context.subject || 'hello',
+          text: results.text,
+          html: results.html,
+      }, function(error, info) {
+        if (error) {
+          reject(error)
+        } else {
+          resolve(info)
+        }
+      });
     });
   });
 }

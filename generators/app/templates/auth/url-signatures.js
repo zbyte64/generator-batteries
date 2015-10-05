@@ -2,18 +2,21 @@ import _ from 'lodash';
 import querystring from 'querystring';
 import jwt from 'jsonwebtoken';
 
-export function readTokenParams() {
-  return function(req, res, next) {
-    jwt.verify(req.query.token, process.env.SECRET, function(err, decoded) {
-      if (err) {
-        return res.send(400, err);
-      }
-      if (decoded.path !== req.path) {
-        return res.send(403);
-      }
-      req.tokenParams = decoded;
-      next();
+export function readTokenParams(*required) {
+  return function *(next) {
+    var path = this.request.path;
+    this.tokenParams = yield new Promise(function(resolve, reject) {
+      jwt.verify(req.query.token, process.env.SECRET, function(err, decoded) {
+        if (err) {
+          reject(err);
+        } else if (decoded.path !== path) {
+          reject('incorrect path');
+        } else {
+          resolve(decoded);
+        }
+      });
     });
+    yield next;
   }
 }
 

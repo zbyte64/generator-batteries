@@ -5,7 +5,7 @@ Batteries Included Microservices.
 
 # Batteries
 
-* `Auth` ExpressJS + Swig + Waterline + Login & Signup
+* `Auth` ExpressJS + Swig + Waterline + Login & Signup //TODO koa & koa-views & koa-connect
 * `Api` Node Restify
 * `Client` Angular2 + JSPM + Babel
 * `Common` Glue, ORM, Buisiness Rules
