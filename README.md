@@ -5,13 +5,13 @@ Batteries Included Microservices.
 
 # Batteries
 
-* `Auth` ExpressJS + Swig + Login & Signup
+* `Auth` ExpressJS + Swig + Waterline + Login & Signup
 * `Api` Node Restify
 * `Client` Angular2 + JSPM + Babel
-* `Common` Glue, ORM, Crypto strategies
+* `Common` Glue, ORM, Buisiness Rules
 * `Proxy` Mounts all the batteries
 
-All apps share a secret and read the cookie session as a jwt.
+All apps share a secret and read from a HMAC cookie session.
 Each app runs in a docker container or as a service.
 
 

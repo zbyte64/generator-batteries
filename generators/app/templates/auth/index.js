@@ -4,7 +4,7 @@ import flash from 'flash';
 import express from 'express';
 import swig from 'swig';
 import passport from 'passport';
-import jwt from 'express-jwt';
+import cookieSession from 'cookie-session';
 import {Strategy as LocalStrategy} from 'passport-local';
 import bcrypt from 'bcrypt';
 import {EventEmitter} from "events";
@@ -16,8 +16,9 @@ import {readTokenParams, generateTokenUrl} from './url-signatures';
 
 export var customerEvent = new EventEmitter();
 
+//todo common passport
 passport.use('login', new LocalStrategy(function(username, password, done) {
-  getUser(username).then(user => {
+  getUser({username}).then(user => {
     bcrypt.compare(password, user.password_hash, function(err, res) {
       if (err) {
         return done(err);
@@ -33,6 +34,19 @@ passport.use('login', new LocalStrategy(function(username, password, done) {
   });
 }));
 
+passport.serializeUser(function(user, done) {
+  done(null, user.id);
+});
+
+passport.deserializeUser(function(id, done) {
+  getUser({id}).then(user => {
+    done(null, user);
+  }, notFound => {
+    done(notFound, null)
+  });
+});
+
+
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 var BASE_URL = process.env.BASE_URL;
 var viewsDir = path.join(__dirname, 'views');
@@ -44,15 +58,11 @@ app.set('view engine', 'html');
 app.set('views', viewsDir);
 
 //we need sessions for passport, but express-jwt is not session based
-app.use(jwt({
+app.use(cookieSession({
   secret: process.env.SECRET,
-  credentialsRequired: false,
-  requestProperty: 'session',
-  getToken: function (req) {
-    return req.cookie('xyz');
-  }
 }));
 app.use(passport.initialize());
+app.use(passport.session());
 app.use(flash());
 
 app.get('/login', function(req, res) {

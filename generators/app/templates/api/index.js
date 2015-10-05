@@ -1,14 +1,13 @@
 import _ from 'lodash';
 import restify from 'restify';
-import jwt from 'express-jwt';
+import cookieSession from 'cookie-session';
 
 var BASE_URL = process.env.BASE_URL;
 
 var app = restify.createServer();
 
-app.use(jwt({
+app.use(cookieSession({
   secret: process.env.SECRET,
-  requestProperty: 'session',
 }));
 
 
