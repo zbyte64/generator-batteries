@@ -1,6 +1,6 @@
 FROM node:latest
 
-RUN npm install -g gulp jspm
+RUN npm install -g gulp-cli jspm
 RUN mkdir /opt/app
 WORKDIR /opt/app
 ADD client /opt/app

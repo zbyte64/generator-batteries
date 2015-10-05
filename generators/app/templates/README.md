@@ -1,27 +1,13 @@
-Batteries Included Microservices.
-
-(Not yet ready)
-
-
-# Batteries
-
-* `Auth` ExpressJS with Swig templates
-* `Api` Node Restify
-* `Client` Angular2 + JSPM + Babel
-* `Common` Glue, ORM, Crypto strategies
-* `Proxy` Mounts all the batteries
-
-All apps share a secret and read the cookie session as a jwt.
-Each app runs in a docker container or as a service.
+Project Description
 
 
 # Getting started
 
-Install:
+Install dependencies:
 
 ```
-  npm install generate-batteries
-  yo batteries  
+  npm install
+  pip install docker-compose
 ```
 
 Run project:
@@ -29,6 +15,8 @@ Run project:
 ```
   npm start
 ```
+
+Or:
 
 ```
   docker-compose up

@@ -1,0 +1,9 @@
+<form method="POST">
+  {% for message in messages %}
+    <p class="{{message.type}}">{{message.message}}</p>
+  {% endfor %}
+
+  <input name="password" type="password"/>
+  <input name="confirm_password" type="password"/>
+  <button type="submit">Set Password</button>
+</form>

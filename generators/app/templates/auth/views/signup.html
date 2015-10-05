@@ -1,0 +1,9 @@
+<form method="POST">
+  {% for message in messages %}
+    <p class="{{message.type}}">{{message.message}}</p>
+  {% endfor %}
+  <input name="first_name"/>
+  <input name="last_name"/>
+  <input name="email" type="email"/>
+  <button type="submit">Signup</button>
+</form>

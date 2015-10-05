@@ -5,27 +5,55 @@ import express from 'express';
 import swig from 'swig';
 import passport from 'passport';
 import jwt from 'express-jwt';
+import {Strategy as LocalStrategy} from 'passport-local';
+import bcrypt from 'bcrypt';
+import {EventEmitter} from "events";
+import path from 'path';
 
-import {doHash, getUser, updateUser, customerEvent, sendMail, readTokenParams, generateTokenUrl} from '../common';
+import {getUser, updateUser} from './models';
+import {sendMail} from './mailer';
+import {readTokenParams, generateTokenUrl} from './url-signatures';
 
+export var customerEvent = new EventEmitter();
 
-//var jsonParser = bodyParser.json();
+passport.use('login', new LocalStrategy(function(username, password, done) {
+  getUser(username).then(user => {
+    bcrypt.compare(password, user.password_hash, function(err, res) {
+      if (err) {
+        return done(err);
+      } else if (res) {
+        customerEvent.emit('login', {email:user.email});
+        return done(null, user);
+      } else {
+        return done(null, false, { message: 'Incorrect Login' });
+      }
+    });
+  }, notFound => {
+    return done(null, false, { message: 'Incorrect Login'});
+  });
+}));
+
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 var BASE_URL = process.env.BASE_URL;
+var viewsDir = path.join(__dirname, 'views');
 
 var app = express();
 
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
-app.set('views', __dirname+'/views');
+app.set('views', viewsDir);
 
+//we need sessions for passport, but express-jwt is not session based
 app.use(jwt({
   secret: process.env.SECRET,
+  credentialsRequired: false,
+  requestProperty: 'session',
+  getToken: function (req) {
+    return req.cookie('xyz');
+  }
 }));
-app.use(passport.initialize())
-app.use(passport.session())
+app.use(passport.initialize());
 app.use(flash());
-
 
 app.get('/login', function(req, res) {
   res.render('login', {messages: res.locals.flash});
@@ -35,12 +63,11 @@ app.get('/login', function(req, res) {
 app.post('/login',
   urlencodedParser, passport.authenticate('login',{successRedirect: '/',
                                                    failureRedirect: `${BASE_URL}/login`,
-                                                   failureFlash: true }),
-);
+                                                   failureFlash: true }));
 
 app.get('/logout', function(req, res) {
   if (req.user) {
-    customerEvent({email: req.user.email, event: 'logout'});
+    customerEvent.emit('logout', {email: req.user.email});
     req.logout();
   }
   res.redirect(`${BASE_URL}/login`);
@@ -67,9 +94,8 @@ app.post('/signup', urlencodedParser, function(req, res) {
   var params = _.pick(req.body, ['first_name', 'last_name', 'email']);
 
   //signed url for /auth/footer-activate
-  sendMail({
+  sendMail('signup', {
     email: req.body.email,
-    action: 'signup',
     properties: _.merge(params, {
       url: generateTokenUrl(`${BASE_URL}/activate`, params)
     }),
@@ -95,9 +121,8 @@ app.post('/forgot-password', urlencodedParser, function(req, res) {
     console.log("found user:", user);
     var url = generateTokenUrl(`${BASE_URL}/resest-password`, {username: user.username});
     console.log("password reset requested:", url);
-    return sendMail({
+    return sendMail('forgotPassword', {
       email: user.email,
-      action: 'forgotPassword',
       properties: {
         url: url
       }
@@ -123,23 +148,26 @@ function setPassword(req, res, next) {
   var password = req.body.password;
   var username = req.tokenParams.username;
 
-  return getUser(username).then(user => {
+  getUser(username).then(user => {
     console.log("setting user password:", username);
-    return doHash(password).then(hash => {
+    bcrypt.hash(password, 10, function(err, hash) {
+      if (err) {
+        console.error(err);
+        return res.status(500).send(err);
+      }
+
       user.password_hash = hash;
       user.email_confirmed = true;
-      return updateUser(user.id, user).then(response => {
+
+      updateUser(user.id, user).then(response => {
         req.login(user, function(err) {
           if (err) {
-            console.error("Could not login")
             console.error(err);
-            //res.status(500).send(err)
-            return;
+            return res.status(500).send(err)
           }
-          customerEvent({email:user.email, event:'login'});
+          customerEvent.emit('login', {email:user.email});
           next();
         });
-        return user;
       }, error => {
         console.error("Could not save password")
         console.error(error)
@@ -147,14 +175,15 @@ function setPassword(req, res, next) {
       });
     });
   }, notFound => {
-    res.status(400);
+    res.status(500).send(notFound);
   });
 }
 
 function setPasswordWithEvent(eventName) {
   return function(req, res, next) {
-    setPassword(req, res, next).then(user => {
-      customerEvent({email:user.email, event: eventName});
+    setPassword(req, res, (user) => {
+      customerEvent.emit(eventName, {email:user.email});
+      next();
     });
   }
 }
@@ -170,7 +199,7 @@ app.get('/activate', readTokenParams('username'), function(req, res) {
 });
 
 app.post('/activate', readTokenParams('username'), urlencodedParser, function(req, res, next) {
-  if (!req.body || !req.body.password || req.body.password !== req.body.password_confirm) {
+  if (!req.body || !req.body.password || req.body.password !== req.body.confirm_password) {
     req.flash('error', 'Passwords do not match')
     res.redirect(BASE_URL+req.url);
   } else {
@@ -189,7 +218,7 @@ app.get('/reset-password', readTokenParams('username'), function(req, res) {
 });
 
 app.post('/reset-password', readTokenParams('username'), urlencodedParser, function(req, res, next) {
-  if (!req.body || !req.body.password || req.body.password !== req.body.password_confirm) {
+  if (!req.body || !req.body.password || req.body.password !== req.body.confirm_password) {
     req.flash('error', 'Passwords do not match')
     res.redirect(BASE_URL+req.url);
   } else {
