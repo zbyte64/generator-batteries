@@ -1,18 +1,14 @@
 import {EmailTemplate} from 'email-templates';
 import nodemailer from 'nodemailer';
+import stubTransporter from 'nodemailer-stub-transport';
 import _ from 'lodash';
 import path from 'path';
 
 var viewsDir = path.join(__dirname, 'emails');
 
 //TODO environ configurable?
-export var transporter = nodemailer.createTransport({
-  service: 'Gmail',
-  auth: {
-    user: 'gmail.user@gmail.com',
-    pass: 'userpass'
-  }
-});
+//TODO swig appars to be broken for email templating
+export var transporter = nodemailer.createTransport(stubTransporter());
 
 export var COMMON_CONTEXT = {
   //TODO server address, website name, from

@@ -26,6 +26,7 @@
     "chai": "^3.3.0",
     "co-supertest": "0.0.10",
     "mocha-co": "^1.17.1",
+    "nodemailer-stub-transport": "^1.0.0",
     "supertest": "^1.1.0"
   },
   "description": "",

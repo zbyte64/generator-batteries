@@ -108,7 +108,7 @@ router.post('/signup', function*() {
   var params = _.pick(this.request.body, ['first_name', 'last_name', 'email']);
 
   //signed url for /auth/footer-activate
-  sendMail('signup', {
+  this.emailSent = yield sendMail('signup', {
     email: params.email,
     properties: _.merge(params, {
       url: generateTokenUrl(`${BASE_URL}/activate`, params)
@@ -130,15 +130,12 @@ router.post('/forgot-password', function*() {
   }
   console.log("forgot password for:", this.request.body.username);
 
-  var ctx = this;
-
-  //TODO big rework
   var user = yield getUser(this.request.body.username)
 
   console.log("found user:", user);
   var url = generateTokenUrl(`${BASE_URL}/resest-password`, {username: user.username});
   console.log("password reset requested:", url);
-  var results = sendMail('forgotPassword', {
+  this.emailSent = yield sendMail('forgotPassword', {
     email: user.email,
     properties: {
       url: url

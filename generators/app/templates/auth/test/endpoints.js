@@ -43,6 +43,17 @@ describe('auth endpoints', function() {
       var res = yield request.post('/signup').expect(302).end();
       expect(res.headers.location).to.equal('/signup');
     });
+
+    it('sends signup email', function *(){
+      var data = {
+        first_name: 'foo',
+        email: 'bar@z.com',
+      };
+      var res = yield request.post('/signup').send(data).expect(302).end();
+      //console.log(res.emailSent)
+      expect(res.headers.location).to.equal('/signup');
+      //TODO read message
+    });
   });
 
   describe('/forgot-password', function() {
@@ -54,6 +65,16 @@ describe('auth endpoints', function() {
     it('accept submissions', function *(){
       var res = yield request.post('/forgot-password').expect(302).end();
       expect(res.headers.location).to.equal('/forgot-password');
+    });
+
+    it('sends reset email', function *(){
+      var data = {
+        email: 'bar@z.com',
+      };
+      var res = yield request.post('/forgot-password').send(data).expect(302).end();
+      //console.log(res.emailSent)
+      expect(res.headers.location).to.equal('/forgot-password');
+      //TODO read message
     });
   });
 
@@ -68,6 +89,12 @@ describe('auth endpoints', function() {
       expect(url).to.be.equal('/activate');
       var res = yield request.get(url).query(query).expect(200).end();
       expect(res.text).to.be.a('string');
+
+      var data = {
+        'password': 'password',
+        'confirm_password': 'password',
+      };
+      var res = yield request.post(url).query(query).send(data).expect(302).end();
     });
 
   });
