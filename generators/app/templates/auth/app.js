@@ -4,51 +4,18 @@ import $router from 'koa-router';
 import bodyParser from 'koa-bodyparser';
 import flash from 'koa-connect-flash';
 import views from 'koa-views';
-import passport from 'koa-passport';
 import session from 'koa-session';
-import {Strategy as LocalStrategy} from 'passport-local';
 import bcrypt from 'bcrypt';
 import {EventEmitter} from "events";
 import path from 'path';
 import thunkify from 'thunkify';
 
+import {passport} from './strategies';
 import {getUser, updateUser} from './models';
 import {sendMail} from './mailer';
 import {readTokenParams, generateTokenUrl} from './url-signatures';
 
 export var customerEvent = new EventEmitter();
-
-//todo common passport
-passport.use('login', new LocalStrategy(function(username, password, done) {
-  getUser({username}).then(user => {
-    bcrypt.compare(password, user.password_hash, function(err, res) {
-      if (err) {
-        return done(err);
-      } else if (res) {
-        customerEvent.emit('login', {email:user.email});
-        return done(null, user);
-      } else {
-        return done(null, false, { message: 'Incorrect Login' });
-      }
-    });
-  }, notFound => {
-    return done(null, false, { message: 'Incorrect Login'});
-  });
-}));
-
-passport.serializeUser(function(user, done) {
-  done(null, user.id);
-});
-
-passport.deserializeUser(function(id, done) {
-  getUser({id}).then(user => {
-    done(null, user);
-  }, notFound => {
-    done(notFound, null)
-  });
-});
-
-
 export var BASE_URL = process.env.BASE_URL;
 export var viewsDir = path.join(__dirname, 'views');
 

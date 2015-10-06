@@ -3,10 +3,11 @@
   "version": "0.0.0",
   "dependencies": {},
   "devDependencies": {
-    "gulp": "^3.8.11"
+    "gulp": "^3.9.0",
+    "gulp-shell": "^0.4.3"
   },
   "description": "",
   "scripts": {
-    "start": "echo TODO"
+    "start": "$(npm bin)/gulp run-proxy"
   }
 }

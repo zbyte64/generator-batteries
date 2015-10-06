@@ -31,14 +31,14 @@ function runService(name) {
   var cwd = path.resolve(__dirname, '..', name);
   //return url to service
   var port = 8081 + SERVICES.length;
-  console.log(`Starting service ${name} on port ${port}`);
+  console.log(`Starting service ${name} on port ${port} in ${cwd}`);
   var child = child_process.spawn('npm', ['start'], {
     cwd: cwd,
-    env: {
+    env: _.merge({
       BASE_URL: base_url,
       PORT: port,
       SECRET: process.env.SECRET || 'himitsu',
-    },
+    }, process.env),
     stdio: [
       'pipe', // use parents stdin for child
       'pipe', // pipe child's stdout to parent
@@ -50,7 +50,7 @@ function runService(name) {
     console.error(err);
   });
   SERVICES.push(child);
-  return `http://localhost:${port}/`;
+  return `http://localhost:${port}`;
 }
 process.on('exit', function() {
   SERVICES.map(service => service.kill());
@@ -75,7 +75,7 @@ function environMatch(regex) {
   }
 }
 
-var server = app.listen(parseInt(process.env.PORT) || 8000, function() {
+var server = app.listen(parseInt(process.env.PORT) || 8080, function() {
   var host = server.address().address;
   var port = server.address().port;
 
