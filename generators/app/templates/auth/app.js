@@ -81,7 +81,7 @@ router.post('/login', passport.authenticate('login',{successRedirect: '/',
                                                    failureFlash: true }));
 
 router.get('/logout', function*() {
-  if (req.user) {
+  if (this.user) {
     customerEvent.emit('logout', {email: this.user.email});
     this.logout();
   }
@@ -89,7 +89,7 @@ router.get('/logout', function*() {
 });
 
 router.get('/signup', function*() {
-  yield res.render('signup', {messages: this.flash()});
+  yield this.render('signup', {messages: this.flash()});
 });
 
 //pumps to footer signup

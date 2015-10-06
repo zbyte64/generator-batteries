@@ -4,26 +4,32 @@ import jwt from 'jsonwebtoken';
 
 export function readTokenParams(...required) {
   return function *(next) {
-    var path = this.request.path;
-    this.tokenParams = yield new Promise(function(resolve, reject) {
-      jwt.verify(req.query.token, process.env.SECRET, function(err, decoded) {
-        if (err) {
-          reject(err);
-        } else if (decoded.path !== path) {
-          reject('incorrect path');
-        } else {
-          resolve(decoded);
-        }
+    if (this.request.query && this.request.query.token) {
+      var path = this.request.path;
+      var token = this.request.query.token;
+      this.tokenParams = yield new Promise(function(resolve, reject) {
+        jwt.verify(token, process.env.SECRET, function(err, decoded) {
+          if (err) {
+            reject(err);
+          } else if (decoded.path !== path) {
+            reject('incorrect path');
+          } else {
+            //TODO required
+            resolve(decoded);
+          }
+        });
       });
-    });
-    yield next;
+      yield next;
+    } else {
+      this.throw(403);
+    }
   }
 }
 
-export var DEFAULT_EXPIRATION = 60*24*3; //3 Days
+export var DEFAULT_EXPIRATION = 60*60*24*3; //3 Days ; seconds
 export function generateTokenUrl(path, params, expiresIn=DEFAULT_EXPIRATION) {
   var token = jwt.sign(_.merge({path}, params), process.env.SECRET, {
-    expiresInMinutes: expiresIn
+    expiresIn: expiresIn
   });
-  return querystring.encode({token});
+  return path+'?'+querystring.encode({token});
 }
