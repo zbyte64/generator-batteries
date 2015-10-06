@@ -1,6 +1,6 @@
 <form method="POST">
-  {% for message in messages %}
-    <p class="{{message.type}}">{{message.message}}</p>
+  {% for error in errors %}
+    <p class="error">{{error}}</p>
   {% endfor %}
   <input name="username"/>
   <input name="password" type="password"/>

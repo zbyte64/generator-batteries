@@ -2,7 +2,7 @@ import _ from 'lodash';
 import querystring from 'querystring';
 import jwt from 'jsonwebtoken';
 
-export function readTokenParams(*required) {
+export function readTokenParams(...required) {
   return function *(next) {
     var path = this.request.path;
     this.tokenParams = yield new Promise(function(resolve, reject) {

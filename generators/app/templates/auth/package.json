@@ -23,11 +23,15 @@
     "waterline": "^0.10.26"
   },
   "devDependencies": {
-    "gulp": "^3.8.11"
+    "chai": "^3.3.0",
+    "co-supertest": "0.0.10",
+    "mocha-co": "^1.17.1",
+    "supertest": "^1.1.0"
   },
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "$(npm bin)/babel-node index.js"
+    "start": "$(npm bin)/babel-node index.js",
+    "test": "$(npm bin)/mocha --compilers js:babel/register"
   }
 }
