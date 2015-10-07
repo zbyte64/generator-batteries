@@ -11,6 +11,7 @@
     "koa": "^1.0.0",
     "koa-bodyparser": "^2.0.1",
     "koa-connect-flash": "^0.1.2",
+    "koa-csrf": "^2.3.0",
     "koa-passport": "^1.2.0",
     "koa-router": "^5.2.3",
     "koa-session": "^3.3.1",

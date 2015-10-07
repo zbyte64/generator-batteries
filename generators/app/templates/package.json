@@ -1,7 +1,9 @@
 {
   "name": "package",
   "version": "0.0.0",
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^3.10.1"
+  },
   "devDependencies": {
     "gulp": "^3.9.0",
     "gulp-shell": "^0.4.3"

@@ -12,7 +12,10 @@ app.use(cookieSession({
 
 
 app.get('/self', function(req, res, next) {
-  res.send(req.session);
+  res.send({
+    session: req.session,
+    user: req.user,
+  });
   next();
 });
 
