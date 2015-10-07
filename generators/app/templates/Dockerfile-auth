@@ -1,5 +1,6 @@
 FROM node:latest
 
+RUN npm install -g knex
 RUN mkdir /opt/app
 WORKDIR /opt/app
 ADD auth /opt/app

@@ -1,17 +1,4 @@
-var knex = require('knex')({
-  client: 'pg',
-  connection: process.env.DATABASE_URL
-});
-
-/*
-//use this for tests
-var knex = require('knex')({
-  client: 'sqlite3',
-  connection: {
-    filename: "./mydb.sqlite"
-  }
-});
-*/
+var knex = require('knex')(require('knexfile')[process.env.ENVIRONMENT || 'development']);
 
 var bookshelf = require('bookshelf')(knex);
 

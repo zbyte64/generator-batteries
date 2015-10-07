@@ -9,6 +9,7 @@ api:
     PORT: "8000"
     SECRET: "<%= secret %>"
     DATABASE_URL: "postgres://db?PASSWORD=<%= db_password %>"
+    ENVIRONMENT: "staging"
   volumes:
     - ./api:/opt/app
     - ./common:/opt/common
@@ -22,6 +23,8 @@ auth:
   environment:
     PORT: "8000"
     SECRET: "<%= secret %>"
+    DATABASE_URL: "postgres://db?PASSWORD=<%= db_password %>"
+    ENVIRONMENT: "staging"
   volumes:
     - ./auth:/opt/app
     - ./common:/opt/common
@@ -44,6 +47,8 @@ proxy:
     - client
   ports:
     - "80:80"
+  environment:
+    DOCKER_ENABLED: "true"
   volumes:
     - ./proxy:/opt/app
     - ./common:/opt/common
