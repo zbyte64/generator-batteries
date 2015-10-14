@@ -7,9 +7,9 @@ api:
     - db
   environment:
     PORT: "8000"
-    SECRET: "<%= secret %>"
-    DATABASE_URL: "postgres://db?PASSWORD=<%= db_password %>"
-    ENVIRONMENT: "staging"
+    SECRET: "foobar"
+    DATABASE_URL: "postgres://postgres:password@db/db"
+    ENVIRONMENT: "development"
     BASE_URL: '/api'
   volumes:
     - ./api:/opt/app
@@ -23,9 +23,9 @@ auth:
     - db
   environment:
     PORT: "8000"
-    SECRET: "<%= secret %>"
-    DATABASE_URL: "postgres://postgres:<%= db_password %>@db/db"
-    ENVIRONMENT: "staging"
+    SECRET: "foobar"
+    DATABASE_URL: "postgres://postgres:password@db/db"
+    ENVIRONMENT: "development"
     BASE_URL: '/auth'
   volumes:
     - ./auth:/opt/app
@@ -59,4 +59,4 @@ proxy:
 db:
   image: postgres
   environment:
-    POSTGRES_PASSWORD: "<%= db_password %>"
+    POSTGRES_PASSWORD: "password"

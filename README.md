@@ -4,24 +4,25 @@ Batteries Included Microservices.
 
 TODO:
 
-* auth to issue authorizations w/o user lookup
-* migrations
+* auth to issue authorizations; usable w/o user lookup
 * fix up client
-* public/index.html - marketing page
+* public/index.html - landing page
 * bower -> public
-* npm init? ensure initial requirements are installed
+* gulp init
 * ? oauth2: auth to be a server: https://github.com/thomseddon/koa-oauth-server ; api to be consumer
 * ? passport-jwt
 
 
 # Batteries
 
-* `Auth` Koa + Bookshelf + Login & Registration
-* `Api` Node Restify
-* `Client` Angular2 + JSPM + Babel
-* `Proxy` Mounts all the batteries
+* `/auth` Koa + Bookshelf + Login & Registration
+* `/api` Node Restify
+* `/client` Angular2 + JSPM + Babel
+* `proxy` Mounts all the batteries
 * `public` Static assets
 * `common` Available to all services
+
+Docker is optional. Services can be switched out.
 
 All apps share a secret and read from a HMAC cookie session.
 Each app runs in a docker container or as a process.
@@ -34,16 +35,4 @@ Install:
 ```
   npm install generate-batteries
   yo batteries  
-```
-
-Run project:
-
-```
-  npm start
-```
-
-Or:
-
-```
-  docker-compose up
 ```

@@ -13,21 +13,20 @@ var SERVICES = [];
 if (process.env.DOCKER_ENABLED) {
   app.use('/api', serveTo(environMatch(/API_PORT$/)));
   app.use('/auth', serveTo(environMatch(/AUTH_PORT$/)));
-  app.use('/client', serveTo(environMatch(/CLIENT_PORT$/)));
+  app.use(serveTo(environMatch(/CLIENT_PORT$/)));
 } else {
-  var apiServer = runService('api');
-  var authServer = runService('auth');
-  var clientServer = runService('client');
+  var apiServer = runService('api', {BASE_URL: '/api'});
+  var authServer = runService('auth', {BASE_URL: '/auth'});
+  var clientServer = runService('client', {BASE_URL: '/'});
   app.use('/api', serveTo(apiServer));
   app.use('/auth', serveTo(authServer));
-  app.use('/client', serveTo(clientServer));
+  app.use(serveTo(clientServer));
 }
 
 app.use(express.static(path.resolve(__dirname, '..', 'public')));
 
 
-function runService(name) {
-  var base_url = '/' + name;
+function runService(name, env) {
   var cwd = path.resolve(__dirname, '..', name);
   //return url to service
   var port = 8081 + SERVICES.length;
@@ -35,10 +34,9 @@ function runService(name) {
   var child = child_process.spawn('npm', ['start'], {
     cwd: cwd,
     env: _.merge({
-      BASE_URL: base_url,
       PORT: port,
       SECRET: process.env.SECRET || 'himitsu',
-    }, process.env),
+    }, env, process.env),
     stdio: [
       'pipe', // use parents stdin for child
       'pipe', // pipe child's stdout to parent

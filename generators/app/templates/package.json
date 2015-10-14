@@ -10,6 +10,6 @@
   },
   "description": "",
   "scripts": {
-    "start": "$(npm bin)/gulp run-proxy"
+    "start": "$(npm bin)/gulp"
   }
 }

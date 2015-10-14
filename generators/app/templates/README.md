@@ -8,12 +8,13 @@ Install dependencies:
 ```
   npm install
   pip install docker-compose
+  gulp init
 ```
 
 Run project:
 
 ```
-  npm start
+  gulp
 ```
 
 Or:
